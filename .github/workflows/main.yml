@@ -1,1 +1,1 @@
-run: python fetch_gilt.py
+run: python scripts/fetch_gilt.py
