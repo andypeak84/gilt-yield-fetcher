@@ -1,0 +1,1 @@
+run: python scripts/fetch_gilt.py
