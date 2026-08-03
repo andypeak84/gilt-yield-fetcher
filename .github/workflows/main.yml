@@ -28,5 +28,10 @@ jobs:
           git config user.name "gilt-bot"
           git config user.email "actions@github.com"
           git add data/gilt-2y.json
-          git commit -m "Update 2Y gilt yield" || echo "No changes to commit"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update 2Y gilt yield"
+            git pull --rebase origin main
+            git push
+          fi
