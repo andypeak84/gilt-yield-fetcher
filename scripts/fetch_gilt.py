@@ -42,28 +42,25 @@ def main():
     if col_2y is None:
         raise RuntimeError("Could not find 2-year maturity column")
 
-   # Walk backwards from the last row to find the most recent complete entry
-out = None
-for r in range(sheet.max_row, 1, -1):          # go all the way down
-    d = sheet.cell(row=r, column=1).value
-    v = sheet.cell(row=r, column=col_2y).value
+    # Walk backwards from the last row to find the most recent complete entry
+    out = None
+    for r in range(sheet.max_row, 1, -1):
+        d = sheet.cell(row=r, column=1).value
+        v = sheet.cell(row=r, column=col_2y).value
 
-    # Skip header / empty rows
-    if d is None or v is None:
-        continue
+        if d is None or v is None:
+            continue
 
-    # Skip the header text rows (just in case)
-    if isinstance(d, str) and "maturity" in d.lower():
-        continue
+        if isinstance(d, str) and "maturity" in d.lower():
+            continue
 
-    # Found a valid data row
-    if hasattr(d, "strftime"):
-        date_str = d.strftime("%Y-%m-%d")
-    else:
-        date_str = str(d)[:10]
+        if hasattr(d, "strftime"):
+            date_str = d.strftime("%Y-%m-%d")
+        else:
+            date_str = str(d)[:10]
 
-    out = {"date": date_str, "yield_2y": float(v)}
-    break
+        out = {"date": date_str, "yield_2y": float(v)}
+        break
 
     if out is None:
         raise RuntimeError("Could not find a valid data row")
