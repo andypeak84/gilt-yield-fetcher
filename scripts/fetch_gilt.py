@@ -80,6 +80,13 @@ def fetch_latest_from_boe():
         else:
             date_str = str(d)[:10]
 
+        # 🚨 FIX: Validate that this is an actual ISO date string
+        # This explicitly drops Excel text blocks like "years:" or summary footprints
+        try:
+            datetime.strptime(date_str, "%Y-%m-%d")
+        except ValueError:
+            continue  # Discard non-date metadata rows cleanly
+
         rows.append({"date": date_str, "yield_2y": float(v)})
 
     return rows
@@ -95,7 +102,15 @@ def main():
     history = load_history()
 
     # 3. Merge (Boe data wins for the same date)
-    by_date = {item["date"]: item for item in history}
+    # Ensure existing history entries also don't contain old malformed data
+    by_date = {}
+    for item in history:
+        try:
+            datetime.strptime(item["date"], "%Y-%m-%d")
+            by_date[item["date"]] = item
+        except (ValueError, KeyError):
+            continue  # Purges old "years:" junk out of your existing json data file
+
     for row in boe_rows:
         by_date[row["date"]] = row
 
